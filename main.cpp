@@ -5,13 +5,14 @@ FILE * fptr;
 
 void menu() {
     printf("1- Input Values \n");
-    printf("2- Display Array \n");
-    printf("3- Maximum Value \n");
-    printf("4- Minimum Value \n");
-    printf("5- Calculate Average \n");
-    printf("6- Enter into file \n");
-    printf("7- Read file \n");
-    printf("8- Stop Program \n");
+    printf("2- Delete Value \n");
+    printf("3- Display Array \n");
+    printf("4- Maximum Value \n");
+    printf("5- Minimum Value \n");
+    printf("6- Calculate Average \n");
+    printf("7- Enter into file \n");
+    printf("8- Read file \n");
+    printf("9- End Program \n");
 }
 
 void  enterValue(int *array){
@@ -20,6 +21,19 @@ void  enterValue(int *array){
         printf("array[%d]: \n ", i);
         scanf("%d", &array[i]);
     }
+}
+
+void deleteValue(int *array, int value){
+    for( int i = 0; i < SIZE -1; ++i){
+        if( array[i] == value ){
+            for( int j = 0; j < SIZE - 1; ++j){
+                array[j] = array[j+1];
+            }
+            array[SIZE - 1] = 0;
+            printf("Deleted %d value. \n", value);
+        }
+    }
+    printf("Value %d not found\n", value);
 }
 
 void displayArray(int array[]) {
@@ -58,12 +72,16 @@ float calcAverage(int array[]){
 void displayReslts(int min, int max, float array[]);
 
 int main() {
-    int array[SIZE] = {1, 2, 3, 4, 5, 6, 7 ,8, 9, 10};
+    int *array = (int*)malloc(SIZE * sizeof(int));
+    if( array == NULL ){
+        printf("Memory allocation failed!!\n");
+    }
     int choice = 0;
     int min = 0;
     int max = 0;
     float average = 0;
-    while(choice != 8){
+    int value = 0;
+    while(choice != 9){
         menu();
         printf("Select program: \n");
         scanf("%d", &choice);
@@ -72,23 +90,28 @@ int main() {
                 enterValue(array);
                 break;
             case 2:
-                displayArray(array);
+                printf("Enter the value: \n");
+                scanf("%d", &value);
+                deleteValue(array, value);
                 break;
             case 3:
+                displayArray(array);
+                break;
+            case 4:
                 max = maxValue(array);
                 printf("Max = %d\n",max);
                 break;
-            case 4:
+            case 5:
                 min = minValue(array);
                 printf("Min = %d\n",min);
                 break;
-            case 5:
+            case 6:
                 average = calcAverage(array);
                 printf("Average = %f\n",average);
                 break;
-            case 6:
+            case 7:
                 fptr = fopen("letters.txt", "w+");
-                if (fptr == 0)
+                if (fptr == NULL)
                 {
                     exit(1);
                 }
@@ -101,20 +124,24 @@ int main() {
 
                 puts("Array Saved");
                 break;
-            case 7:
+            case 8:
                 fptr = fopen("letters.txt", "r+");
+                if (fptr == NULL){
+                    exit(1);
+                }
                 fseek(fptr, 0, SEEK_SET);
-                printf("Oto zawartosc pliku:\n");
+                printf("File content: \n");
                 for (int i = 0; i < SIZE; i++)
                 {
-                    array [i] = fgetc(fptr);
+                    array[i] = fgetc(fptr);
                     fseek(fptr, 0, SEEK_CUR);
-                    printf("%d", array [i]);
+                    printf("%d", array[i]);
                 }
                 printf("\n");
                 fclose(fptr);
                 break;
         }
     }
+    free(array);
     return 0;
 }
